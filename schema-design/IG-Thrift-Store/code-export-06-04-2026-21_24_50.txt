@@ -1,0 +1,89 @@
+title Instagram Thrift Creator Store
+
+customers[icon:user, color: Green]{
+  id serial pk
+  username varchar(50) unique not null
+  name varchar(50) not null
+  email varchar(100) unique not null
+  phone char(10) unique
+  password varchar(256)
+  address text
+}
+products[icon:box, color: Blue]{
+  id serial pk
+  name varchar(50)
+  category ENUM (handmade || thrifted)
+  size varchar(5) null
+  color varchar(10) null
+  condition ENUM (new || refurbished|| old)
+  price float
+  details text
+  quantity int
+}
+inventory [icon:box, color: Blue]{
+  id serial pk
+  name varchar(50)
+  stock int
+  products_id int fk
+  
+}
+thrifted[icon:box, color: Blue]{
+  id serial pk
+  name varchar(50)
+  purchase_price float
+  defects text
+  inventory_id int fk
+}
+homemade[icon:box, color: Blue]{
+  id serial pk
+  name varchar(50)
+  manufacture_batch int
+  inventory_id int fk
+}
+order_items[icon:shopping-cart, color: Yellow]{
+  id serial pk
+  products_id int fk
+  inventory_id int fk
+  customers_id int fk
+  price int
+}
+order[icon:package, color: Yellow]{
+  id serial pk
+  customers_id int fk
+  order_items_id int fk
+  order_status ENUM (shipping || delivered)
+  created_at timestamp
+}
+
+payments[icon:money, color: Red]{
+  id serial pk
+  customers_id int fk
+  order_id int fk
+  payment_method ENUM ( UPI || DebitCard || COD)
+  payment_status ENUM (Completed || Pending || Cancelled)
+}
+shipping[icon:truck, color: Orange]{
+  id primary pk
+  order_id int fk
+  customers_id int fk
+  address text
+  status varchar(10)
+}
+products.id-inventory.products_id
+products.id<>order_items.products_id
+
+inventory.id-homemade.inventory_id
+inventory.id-thrifted.inventory_id
+inventory.id<>order_items.inventory_id
+
+order_items.id>order.order_items_id
+
+order.id-payments.order_id
+order.id <>shipping.order_id
+
+customers.id<payments.customers_id
+customers.id <order_items.customers_id
+customers.id <shipping.customers_id
+customers.id<order.customers_id
+
+
