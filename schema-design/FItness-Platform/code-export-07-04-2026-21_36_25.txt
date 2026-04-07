@@ -1,0 +1,140 @@
+title Fitness Influencer Coaching Platform
+//users, trainers, subscriptions, plans, sessions, progress_tracks, payments
+users[icon: user, color: Yellow]{
+  id serial pk
+  first_name varchar(30) not null
+  last_name varchar(20) null
+  username varchar(50) unique not null
+  email varchar(100) unique not null
+  phone char(15) unique not null
+  password varchar(20) not null
+  address text not null
+  usertype ENUM('free','subscription')
+  age int
+  created_at timestamp
+  updated_at timestamp
+}
+trainers[icon:user, color: Green]{
+  id serial pk
+  first_name varchar(30) not null
+  last_name varchar(20) null
+  username varchar(50) unique not null
+  email varchar(100) unique not null
+  phone char(15) unique not null
+  password varchar(20) not null
+  address text not null
+  bio text
+  created_at timestamp
+  updated_at timestamp
+}
+trainer_managements[icon:azure-plans, color: Blue]{
+  id serial pk
+  users_id int fk
+  trainers_id int fk
+  trainer_notes text
+}
+subscriptions_managements[icon:azure-plans, color: Blue]{
+  id serial pk
+  users_id int fk
+  plan_start timestamp
+  plan_end timestamp 
+  subscriptions_id int fk
+  sessions_id int fk
+  price float 
+}
+subscriptions[icon:azure-user-subscriptions, color: Orange]{
+  id serial pk
+  type ENUM('Workout','Diet')
+  descriptions text not null
+  duration_of_plan varchar(20) not null
+}
+workout_plans[icon:book-open, color: Purple]{
+  id serial pk
+  workouts_weekly_plan varchar(100)
+  duration number
+  workout_vids_url varchar(200)
+  details text
+}
+diet_plans[icon:book-open, color: Orange]{
+  id serial pk
+  diet_list varchar(100)
+  details text
+}
+plans_management[icon:azure-plans, color: Blue]{
+  id serial pk
+  plan_name varchar(50) not null
+  workout_plans_id int fk
+  diet_plans_id int fk
+  subscriptions_id int fk
+  trainers_id int fk
+}
+
+day_wise_details[icon:calendar, color: Purple]{
+  id serial pk
+  monday_list varchar(100)
+  tuesday_list varchar(100)
+  wednesday_list varchar(100)
+  thursday_list varchar(100)
+  friday_list varchar(100)
+  saturday_list varchar(100)
+  sunday_list varchar(100)
+  workout_plans_id int fk
+  diet_plans_id int fk
+}
+receipes[icon:cookie, color: Purple]{
+  id serial pk
+  receipe_name varchar(50) not null
+  details text
+}
+receipes_managements[icon:azure-plans, color: Blue]{
+  id serial pk
+  diet_plans_id int fk
+  receipes_id in fk
+}
+sessions[icon:clock, color: Orange]{
+  id serial pk
+  session_duration number
+  schedule_time timestamp
+  trainers_id int fk
+  details text
+}
+progress_tracks[icon:calendar-check, color: Red]{
+  id serial pk
+  users_id int fk
+  checkin_daily boolean
+  weekly_checkin varchar(200)
+  weight varchar(10) not null
+  height varchar(10) not null
+  BMI varchar(10) not null
+  body_measurements text
+}
+payments[icon:money, color: Red]{
+  id serial pk
+  users_id int fk
+  subscriptions_management_id int fk
+  payment_method ENUM ( UPI || DebitCard || COD)
+  payment_status ENUM (Completed || Pending || Cancelled)
+  payment_ref varchar(100)
+}
+
+users.id<trainer_managements.users_id
+trainers.id<trainer_managements.trainers_id
+users.id<subscriptions_managements.users_id
+subscriptions.id<subscriptions_managements.subscriptions_id
+users.id<payments.users_id
+subscriptions_managements.id-payments.subscriptions_management_id
+
+subscriptions.id<plans_management.subscriptions_id
+workout_plans.id <plans_management.workout_plans_id
+diet_plans.id<plans_management.diet_plans_id
+trainers.id<plans_management.trainers_id
+workout_plans.id<day_wise_details.workout_plans_id
+diet_plans.id<day_wise_details.diet_plans_id
+diet_plans.id<receipes_managements.diet_plans_id
+receipes.id<receipes_managements.receipes_id
+
+
+users.id-progress_tracks.users_id
+sessions.id-subscriptions_managements.sessions_id
+
+trainers.id<sessions.trainers_id
