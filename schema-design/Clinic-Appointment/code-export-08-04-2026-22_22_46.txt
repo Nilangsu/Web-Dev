@@ -1,0 +1,179 @@
+title Clinic Appointment and Diagnostics Platform
+users[icon:users, color: Yellow]{
+  id serial pk
+  first_name varchar(50) not null
+  last_name varchar(20) not null
+  address text not null
+  phone_number char(15) not null
+  email varchar(200) not null
+  password varchar(50) not null
+  user_type ENUM('doctor','lab professional',;patient')
+  created_at timestamp
+  updated_at timestamp
+}
+doctors[icon:doctor, color: Green]{
+  id serial pk
+  bio text not null
+  users_id int fk
+  achievements text
+  qualtifications text
+  specialities varchar(100) not null
+  isAvailable boolean
+  leave_start date 
+  leave_end date 
+  emergency_specialist boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+
+patients[icon:person, color: Green]{
+  id serial pk
+  guardian varchar(200)
+  emergency_contact char(15)
+  age int
+  height varchar(10)
+  weight varchar(20)
+  visit_reason ENUM('test','consultation','emergency')
+  users_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+lab_professionals[icon:doctor, color: Green]{
+  id serial pk
+  qualtifications text
+  bio text
+  specialities varchar(100) not null
+  isAvailable boolean
+  users_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+lab_professionals_management[icon:sticky-note, color: Purple]{
+  id serial pk
+  lab_professionals_id int fk
+  tests_managements_id int fk
+}
+appointments[icon:menu, color: Blue]{
+  id serial pk
+  patients_id int fk
+  doctors_id int fk
+  schedule_time time not null
+  schedule_date date not null
+  appointment_feedback text
+  appointment_status ENUM('pending','completed','cancelled')
+  price float
+  created_at timestamp
+  updated_at timestamp
+}
+consultations[icon:k8s-group, color: Blue]{
+  id serial pk
+  appointments_id int fk
+  pescription text
+  room_no int
+  created_at timestamp
+  updated_at timestamp
+}
+tests[icon:syringe, color: Blue]{
+  id serial pk
+  test_name varchar(50)
+  price float
+  test_details text
+  test_instructions text
+  created_at timestamp
+  updated_at timestamp
+}
+tests_managements[icon:notebook, color: Purple]{
+  id serial pk
+  consultations_id int fk
+  tests_status ENUM('pending','completed')
+  reports_status ENUM('pending','generated')
+  bill_status ENUM('pending', 'completed')
+  bills_id int fk
+  tests_list text
+  appointments_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+reports[icon:report, color: Blue]{
+  id serial pk
+  tests_managements_id int fk
+  report_generated_time timestamp
+  reports_upload_url varchar(200)
+  feedback text
+  patients_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+bills[icon:azure-cost-management-and-billing, color: Red]{
+  id serial pk
+  consultations_id int fk
+  bill_details text
+  total_price float
+  payments_id int fk
+  bill_status ENUM('not paid','partial payment','complete payment')
+  created_at timestamp
+  updated_at timestamp
+}
+payments[icon:money, color: Red]{
+  id serial pk
+  payment_method ENUM ( 'UPI', 'DebitCard', 'Cash')
+  payment_status ENUM ('Completed', 'Pending', 'Cancelled')
+  payment_ref varchar(100)
+  patients_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+medical_records[icon:notebook, color: Blue]{
+  id serial pk
+  patients_id int fk
+  medical_conditions text
+  medicines_used text
+  allergies text
+  medical_history text
+  created_at timestamp
+  updated_at timestamp
+}
+records_with_consultation_managements[icon:notebook, color: Purple]{
+  id serial pk
+  consultations_id int fk
+  medical_records_id int fk
+  consultation_records varchar(200)
+  reports_url varchar(200)
+  created_at timestamp
+  updated_at timestamp
+}
+test_lists[icon:list, color: Purple]{
+  id serial pk
+  tests_id int fk
+  tests_managements_id int fk
+}
+
+users.id-patients.users_id
+users.id-doctors.users_id
+users.id-lab_professionals.users_id
+
+patients.id<appointments.patients_id
+doctors.id<appointments.doctors_id
+
+appointments.id-consultations.appointments_id
+consultations.id-records_with_consultation_managements.consultations_id
+medical_records.id<records_with_consultation_managements.medical_records_id
+patients.id-medical_records.patients_id
+consultations.id-bills.consultations_id
+
+appointments.id-tests_managements.appointments_id
+
+
+lab_professionals.id<lab_professionals_management.lab_professionals_id
+tests_managements.id < lab_professionals_management.tests_managements_id
+tests_managements.id<reports.tests_managements_id
+bills.id-tests_managements.bills_id
+
+tests_managements.id<test_lists.tests_managements_id
+tests.id <test_lists.tests_id
+consultations.id-tests_managements.consultations_id
+payments.id -bills.payments_id
+
+patients.id<reports.patients_id
+patients.id<payments.patients_id
