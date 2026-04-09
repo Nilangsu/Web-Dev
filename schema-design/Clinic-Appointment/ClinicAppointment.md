@@ -1,6 +1,6 @@
 # Clinic Appointment and Diagnostics Platform
 
-This database is designed for an Clinic Appointment and Diagnostics Platform. It supports:
+This database is designed for a Clinic Appointment and Diagnostics Platform. It supports:
 
 - Users where all types of users(patients, doctors, lab professionals) will give their basic details.
 - Patients will give extra details which are important to patients only.

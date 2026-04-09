@@ -1,0 +1,108 @@
+title Comic-Con Parking System
+vehicles[icon:car, color: Green]{
+  id serial pk
+  vehicle_numberplate varchar(15) not null
+  owners_id int fk
+  owner_type ENUM('private','cab')
+  vehicle_categories_id int fk
+  vehicle_size ENUM('large','medium','small')
+  color varchar(20)
+  model varchar(50)
+  hasSpecialAccess Boolean
+  created_at timestamp
+  updated_at timestamp
+}
+vehicle_categories[icon:car, color: Green]{
+  id serial pk
+  no_of_wheels ENUM(2,4)
+  vehicle_categories ENUM('car','SUV','bike')
+  fuel_type ENUM('Petrol','Diesel','EV')
+  created_at timestamp
+  updated_at timestamp
+}
+owners[icon:user, color: Yellow]{
+  id serial pk
+  vehicles int fk
+  name varchar(50) not null
+  contact_number char(15) not null
+  email varchar(200)
+  owner_catergory ENUM('cosplayer','exhibitors','VIP','staff','normal')
+  created_at timestamp
+  updated_at timestamp
+}
+owners.id-vehicles.owners_id
+vehicle_categories.id<vehicles.vehicle_categories_id
+tickets[icon:ticket, color: Purple]{
+  id serial pk
+  ticket_status ENUM('new','used')
+  issued_at timestamp
+  parking_spot_details text
+}
+parking_sessions[icon:checklist, color: Orange]{
+  id serial pk
+  entry_time timestamp
+  exit_time timestamp
+  total_price float
+  day varchar(20) not null
+  payment_status ENUM('paid','not paid')
+  tickets_id int fk
+  vechiles_id int fk
+  parking_zones_id int fk
+  payments_id int fk
+}
+tickets.id-parking_sessions.tickets_id
+vehicles.id<parking_sessions.vechiles_id
+
+parking_zones[icon:parking, color: Blue]{
+  id serial pk
+  zone_number varchar(10) not null
+  floor_number int not null
+  spaceAvailable boolean
+  spaceSize ENUM('small','medium','large')
+  total_spots int not null
+  EV_charge_points_available boolean
+  parking_categories int fk
+  rate_per_hour float 
+  created_at timestamp
+  updated_at timestamp
+}
+parking_spots[icon:user, color: blue]{
+  id serial pk
+  isAvailable boolean
+  occupiedTime timestamp
+  unoccupiedTime timestamp
+  parking_zones_id int fk
+}
+extra_charge[icon:battery, color: Red]{
+  id serial pk
+  EV_charge_used boolean
+  charging_start timestamp
+  charging_end timestamp
+  total_charge_time float
+  parking_spots_id int fk
+  parking_sessions_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+parking_zones.id <parking_spots.parking_zones_id
+parking_spots.id<extra_charge.parking_spots_id
+parking_zones.id <parking_sessions.parking_zones_id
+parking_catergories[icon:k8s-group, color: Blue]{
+  id serial pk
+  VIP_area boolean
+  Staff_area boolean
+  Special_area boolean
+  created_at timestamp
+  updated_at timestamp
+}
+parking_catergories.id<parking_zones.id
+parking_sessions.id<extra_charge.parking_sessions_id
+payments[icon:money, color: Red]{
+  id serial pk
+  payment_method ENUM ( 'UPI', 'DebitCard', 'Cash')
+  payment_status ENUM ('Completed', 'Pending', 'Cancelled')
+  payment_ref varchar(100)
+  created_at timestamp
+  updated_at timestamp
+}
+payments.id-parking_sessions.payments_id
