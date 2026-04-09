@@ -1,4 +1,4 @@
-# Clinic Appointment and Diagnostics Platform
+# Comic-Con Parking System
 
 This database is designed for a Comic-Con Parking System. It supports:
 
