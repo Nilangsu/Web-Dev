@@ -108,9 +108,11 @@ elevator_status_tracking[icon:book-open, color: Orange]{
   elevators_id int fk
   elevator_status ENUM('Idle','Running','OutOfService','maintenance')
   elevator_schedule_id int fk
+  ride_assignments_id int fk
   created_at timestamp
   updated_at timestamp
 }
+
 elevator_schedule[icon:calendar, color: Orange]{
   id serial pk
   daily_start_time timestamp
@@ -141,6 +143,7 @@ maintenance_tracking[icon:book-open, color: Orange]{
 
 elevators.id<elevator_status_tracking.elevators_id
 elevator_status_tracking.id-maintenance_tracking.elevator_status_tracking_id
+ride_assignments.id-elevator_status_tracking.ride_assignments_id
 
 elevator_schedule.id<elevator_status_tracking.elevator_schedule_id
 elevator_stuffs.id<maintenance_tracking.elevator_stuffs_id
