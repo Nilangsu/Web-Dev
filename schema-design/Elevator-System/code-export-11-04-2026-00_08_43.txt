@@ -1,0 +1,166 @@
+title Smart Elevator Control
+buildings[icon:cisco-buildings, color: Yellow]{
+  id serial pk
+  building_name varchar(50) not null
+  address text not null
+  created_at timestamp
+  updated_at timestamp
+}
+
+elevator_stuffs[icon:k8s-group, color: Green]{
+  id serial pk
+  name varchar(50)
+  contact_no char(15)
+  isAvailable boolean
+  address text
+  bio text
+  stuff_type ENUM('security','technician')
+  buildings_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+
+elevators[icon:block, color: Green]{
+  id serial pk
+  elevator_name varchar(20) 
+  capacity_person int not null
+  capacity_kg float not null
+  buildings_id int fk
+  elevator_shafts_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+floors[icon:aws-clean-rooms, color: Green]{
+  id serial pk
+  name varchar(20)
+  floor_number int
+  no_of_rooms int
+  buildings_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+buildings.id<floors.buildings_id
+buildings.id<elevator_stuffs.buildings_id
+buildings.id<elevators.buildings_id
+
+floor_access[icon:gcp-permissions, color: Blue]{
+  id serial int
+  floors_id int fk
+  elevators_id int fk
+  isAccessible boolean
+  created_at timestamp
+  updated_at timestamp
+}
+elevators.id<floor_access.elevators_id
+floors.id<floor_access.floors_id
+
+
+
+elevator_shafts[icon:box, color: Blue]{
+  id serial pk
+  floor_min int not null
+  floor_max int not null
+  created_at timestamp
+  updated_at timestamp
+}
+elevator_shafts.id-elevators.elevator_shafts_id
+
+
+floor_requests[icon:list, color: Purple]{
+  id serial pk
+  request_from int
+  request_time timestamp
+  request_direction varchar(20)
+  request_status ENUM('pending','completed','cancelled')
+  reason ENUM('Emergency','normal')
+  updated_at timestamp
+}
+ride_assignments[icon:notebook, color: Blue]{
+  id serial pk
+  floor_requests_id int fk
+  elevators_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+
+ride_logs[icon:log, color: Purple]{
+  id serial pk
+  floor_start int
+  start_time timestamp
+  end_time timestamp
+  floor_requests_id int fk
+  floor_stop_input int
+}
+floor_stops[icon:stopwatch, color: Purple]{
+  id serial pk
+  stop_floor_no int
+  stop_time timestamp
+  stop_duration varchar(20)
+  ride_logs_id int fk
+}
+elevators.id<ride_assignments.elevators_id
+floor_requests.id-ride_assignments.floor_requests_id
+floor_requests.id-ride_logs.floor_requests_id
+ride_logs.id<floor_stops.ride_logs_id
+
+elevator_status_tracking[icon:book-open, color: Orange]{
+  id serial pk
+  elevators_id int fk
+  elevator_status ENUM('Idle','Running','OutOfService','maintenance')
+  elevator_schedule_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+elevator_schedule[icon:calendar, color: Orange]{
+  id serial pk
+  daily_start_time timestamp
+  daily_stop_time timestamp
+  monday boolean
+  tuesday boolean
+  wednesday boolean
+  thursday boolean
+  friday boolean
+  saturday boolean
+  sunday boolean
+  created_at timestamp
+  updated_at timestamp
+}
+maintenance_tracking[icon:book-open, color: Orange]{
+  id serial pk
+  maintenance_type varchar(20)
+  description text
+  scheduled_date date
+  start_time timestamp
+  end_time timestamp
+  status ENUM('completed','in progress','scheduled','cancelled')
+  elevator_stuffs_id int fk
+  elevator_status_tracking_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+
+elevators.id<elevator_status_tracking.elevators_id
+elevator_status_tracking.id-maintenance_tracking.elevator_status_tracking_id
+
+elevator_schedule.id<elevator_status_tracking.elevator_schedule_id
+elevator_stuffs.id<maintenance_tracking.elevator_stuffs_id
+
+
+
+alerts[icon:alert, color: Red]{
+  id serial pk
+  alert_status ENUM('pending','handled','cancelled')
+  alert_level ENUM('low','medium','high')
+  floor_no int
+  elevators_id int fk
+  created_at timestamp
+  updated_at timestamp
+}
+alert_managements[icon:alert, color: Red]{
+  id serial pk
+  alerts_id int fk
+  elevator_stuffs_id int fk
+}
+elevators.id<alerts.elevators_id
+alerts.id<alert_managements.alerts_id
+elevator_stuffs.id<alert_managements.elevator_stuffs_id
